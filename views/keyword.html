@@ -50,9 +50,19 @@
 </head>
 <body>
 <h1>MovieWeb</h1>
-<form action="/buscar" method="GET">
-    <input type="text" name="q" placeholder="Buscar películas..." />
+<form action="/buscar" method="GET" id="form">
+    <input type="text" name="q" placeholder="Buscar películas..." id="input" />
     <button type="submit">Buscar</button>
 </form>
+<script>
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+    form.addEventListener("submit", (ev) => {
+        ev.preventDefault();
+    });
+    form.addEventListener("input", (ev) => {
+
+    });
+</script>
 </body>
 </html>
