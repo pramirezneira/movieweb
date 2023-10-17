@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>MovieWeb</title>
     <style>
@@ -8,7 +9,6 @@
             background-color: #f5f5f5;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -17,7 +17,8 @@
         h1 {
             font-size: 36px;
             color: #333333;
-            margin-bottom: 20px; /* Agregamos margen inferior para separar del input */
+            margin-bottom: 20px;
+            /* Agregamos margen inferior para separar del input */
         }
 
         form {
@@ -46,23 +47,68 @@
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        div {
+            position: relative;
+            text-align: center;
+            top: 40.2vh;
+        }
+
+        div#results {
+            top: 0;
+            background-color: white;
+            border-radius: 1vw;
+            text-align: left;
+            cursor: pointer;
+            margin-bottom: 2vh;
+        }
+
+        div#results :hover {
+            background-color: lightgray;
+        }
+
+        div.keyword {
+            top: 0;
+            padding: 1%;
+        }
     </style>
 </head>
-<body>
-<h1>MovieWeb</h1>
-<form action="/buscar" method="GET" id="form">
-    <input type="text" name="q" placeholder="Buscar películas..." id="input" />
-    <button type="submit">Buscar</button>
-</form>
-<script>
-    const form = document.getElementById("form");
-    const input = document.getElementById("input");
-    form.addEventListener("submit", (ev) => {
-        ev.preventDefault();
-    });
-    form.addEventListener("input", (ev) => {
 
-    });
-</script>
+<body>
+    <div>
+    <h1>MovieWeb</h1>
+    <form action="/buscar" method="GET" id="form">
+        <input type="text" name="q" placeholder="Buscar películas..." id="input" />
+        <button type="submit">Buscar</button>
+        <div id="results"></div>
+    </form>
+    </div>
+    <script>
+        const form = document.getElementById("form");
+        const input = document.getElementById("input");
+        const results = document.getElementById("results");
+        form.addEventListener("submit", (ev) => {
+            ev.preventDefault();
+        });
+        form.addEventListener("input", (ev) => {
+            if (input.value.length == 0) {
+                while (results.hasChildNodes()) results.removeChild(results.firstChild);
+                return;
+            }
+            fetch(`/api/autocomplete?q=${input.value}`).then(response => response.ok ? response.json().then((result) => {
+                while (results.hasChildNodes()) results.removeChild(results.firstChild);
+                for (keyword of result) {
+                    const div = document.createElement("div");
+                    div.className = "keyword"
+                    div.textContent = keyword.keyword_name;
+                    results.append(div);
+                    div.addEventListener("click", (ev) => {
+                        input.value = div.textContent;
+                    });
+                }
+            }) : response.text().then(result => alert(result)));
+        });
+    </script>
 </body>
+
 </html>

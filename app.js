@@ -249,19 +249,19 @@ app.get('/director/:id', (req, res) => {
 
 // Ruta para buscar por palabras clave
 app.get("/keyword", (req, res) => {
-    res.sendFile(__dirname + "/keyword.html");
+    res.sendFile(__dirname + "/views/keyword.html");
 });
 
 // Funcion para autocompletar la búsqueda
 app.get("/api/autocomplete", (req, res) => {
-    const { q } = req.params;
-    const query = `SELECT k.keyword_name FROM keyword AS k
-    WHERE k.keyword_name LIKE ?;`
+    const { q } = req.query;
     if (q == undefined) {
         res.status(400).send("Bad Request");
         return;
     }
-    db.all(query, [q], (err, rows) => {
+    const query = `SELECT k.keyword_name FROM keyword AS k
+    WHERE k.keyword_name LIKE ? ORDER BY k.keyword_name LIMIT 10;`;
+    db.all(query, [`%${q}%`], (err, rows) => {
         if (err) {
             console.log(err);
             res.status(500).send("Internal Server Error");
