@@ -26,8 +26,12 @@ app.get('/buscar', (req, res) => {
 
     // Realizar la búsqueda en la base de datos
     db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
+        `SELECT * FROM movie AS m WHERE m.title LIKE ?
+        OR m.movie_id IN (SELECT m.movie_id FROM movie AS m
+        INNER JOIN movie_cast AS mc ON m.movie_id = mc.movie_id
+        INNER JOIN person AS p ON mc.person_id = p.person_id
+        WHERE p.person_name LIKE ?);`,
+        [`%${searchTerm}%`, `%${searchTerm}%`],
         (err, rows) => {
             if (err) {
                 console.error(err);
