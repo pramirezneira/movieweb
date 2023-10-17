@@ -23,7 +23,11 @@ app.get('/', (req, res) => {
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
     const searchTerm = req.query.q;
-
+    
+    if (searchTerm == 'xoaco') {
+        res.sendFile(__dirname + "/xoaco.png");
+        return;
+    }
     // Realizar la búsqueda en la base de datos
     db.all(
         `SELECT * FROM movie AS m WHERE m.title LIKE ?
