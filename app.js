@@ -1,6 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -9,7 +10,7 @@ const port = process.env.PORT || 3000;
 app.use(express.static('views'));
 
 // Conectar a la base de datos SQLite
-const db = new sqlite3.Database('C:\\Users\\Pablo\\OneDrive - Universidad Austral\\Bases de Datos y Recursos de Información\\Unidad 5 El lenguaje de consulta SQL\\datagrip\\movies.db');
+const db = new sqlite3.Database(process.env.DATABASE != null ? __dirname + process.env.DATABASE : 'C:\\Users\\Pablo\\OneDrive - Universidad Austral\\Bases de Datos y Recursos de Información\\Unidad 5 El lenguaje de consulta SQL\\datagrip\\movies.db');
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
@@ -136,7 +137,7 @@ app.get('/pelicula/:id', (req, res) => {
                     );
 
                     if (!isDuplicate) {
-                    // Si no existe, agregar los datos a la lista de elenco
+                        // Si no existe, agregar los datos a la lista de elenco
                         movieData.cast.push({
                             actor_id: row.actor_id,
                             actor_name: row.actor_name,
@@ -160,7 +161,7 @@ app.get('/pelicula/:id', (req, res) => {
                     if (!isDuplicate) {
                         // Si no existe, agregar los datos a la lista de crew
                         if (row.department_name !== 'Directing' && row.job !== 'Director'
-                        && row.department_name !== 'Writing' && row.job !== 'Writer') {
+                            && row.department_name !== 'Writing' && row.job !== 'Writer') {
                             movieData.crew.push({
                                 crew_member_id: row.crew_member_id,
                                 crew_member_name: row.crew_member_name,
