@@ -2,10 +2,12 @@ const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
 require("dotenv").config();
-const { default: updateServer } = require('./updateServer');
-
+const { updateServer } = require("./updateServer");
+const multer = require("multer");
 const app = express();
 const port = process.env.PORT || 3000;
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // Serve static files from the "views" directory
 app.use(express.static('views'));
@@ -279,8 +281,8 @@ app.get("/update", (req, res) => {
     res.sendFile(__dirname + "/views/update.html");
 });
 
-app.post("/api/update", (req, res) => {
-    const { zipFile } = req.body;
+app.post("/api/update", upload.single("zipFile"), (req, res) => {
+    const zipFile = req.file;
     if (!zipFile) {
         res.status(400).send("Bad Request");
         return;
@@ -289,6 +291,7 @@ app.post("/api/update", (req, res) => {
         updateServer(zipFile);
         res.status(200).send("Server Updated Correctly");
     } catch (error) {
+        console.error(error);
         res.status(500).send("Internal Server Error");
     }
 });
