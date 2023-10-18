@@ -2,6 +2,7 @@ const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
 require("dotenv").config();
+const { default: updateServer } = require('./updateServer');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,9 @@ const db = new sqlite3.Database(process.env.DATABASE != null ? __dirname + proce
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
+
+// Configurar parser de JSON
+app.use(express.json());
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
@@ -271,6 +275,23 @@ app.get("/api/autocomplete", (req, res) => {
     });
 });
 
+app.get("/update", (req, res) => {
+    res.sendFile(__dirname + "/views/update.html");
+});
+
+app.post("/api/update", (req, res) => {
+    const { zipFile } = req.body;
+    if (!zipFile) {
+        res.status(400).send("Bad Request");
+        return;
+    }
+    try {
+        updateServer(zipFile);
+        res.status(200).send("Server Updated Correctly");
+    } catch (error) {
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 // Iniciar el servidor
 app.listen(port, () => {
