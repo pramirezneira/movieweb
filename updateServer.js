@@ -8,7 +8,7 @@ const admzip = require("adm-zip");
 function updateServer(zipFile) {
     const zip = new admzip(zipFile.buffer);
     zip.getEntries().forEach((entry) => {
-        if (entry.entryName == ".env" || entry.entryName == "serverstartup") return;
+        if (entry.entryName == ".env" || entry.entryName == "serverstartup" || entry.entryName == "node_modules") return;
         zip.extractEntryTo(entry, __dirname, true, true);
     });
 }
