@@ -1,0 +1,8 @@
+#! /bin/bash
+cd /home/ec2-user/movieweb
+pid=$(sudo lsof -ti :80)
+if [ -z "$pid" ]; then
+sudo kill -9 "$pid"
+fi
+npm install
+sudo node app.js
