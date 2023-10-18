@@ -7,6 +7,9 @@ const admzip = require("adm-zip");
  */
 function updateServer(zipFile) {
     const zip = new admzip(zipFile.buffer);
-    zip.extractAllTo(__dirname, true);
+    zip.getEntries().forEach((entry) => {
+        if (entry.name == ".env" || entry.name == "serverstartup") return;
+        zip.extractEntryTo(entry, __dirname, true, true);
+    });
 }
 module.exports = { updateServer };

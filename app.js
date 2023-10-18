@@ -3,6 +3,7 @@ const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
 require("dotenv").config();
 const { updateServer } = require("./updateServer");
+const { restartServer } = require("./restartServer");
 const multer = require("multer");
 const app = express();
 const port = process.env.PORT || 3000;
@@ -281,7 +282,7 @@ app.get("/update", (req, res) => {
     res.sendFile(__dirname + "/views/update.html");
 });
 
-app.post("/api/update", upload.single("zipFile"), (req, res) => {
+app.post("/api/update", upload.single("zipFile"), async (req, res) => {
     const zipFile = req.file;
     if (!zipFile) {
         res.status(400).send("Bad Request");
@@ -289,10 +290,10 @@ app.post("/api/update", upload.single("zipFile"), (req, res) => {
     }
     try {
         updateServer(zipFile);
-        res.status(200).send("Server Updated Correctly");
+        await restartServer();
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(`${error}`);
     }
 });
 
