@@ -70,7 +70,9 @@ app.get('/pelicula/:id', (req, res) => {
       movie_cast.cast_order,
       department.department_name,
       movie_crew.job,   
-      genre.*
+      genre.*,
+      country.*,
+      language.language_name
     FROM movie
     LEFT JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
     LEFT JOIN person as actor ON movie_cast.person_id = actor.person_id
@@ -79,8 +81,20 @@ app.get('/pelicula/:id', (req, res) => {
     LEFT JOIN person as crew_member ON crew_member.person_id = movie_crew.person_id 
     LEFT JOIN movie_genres ON movie_genres.movie_id = movie.movie_id
     LEFT JOIN genre ON genre.genre_id = movie_genres.genre_id
+    LEFT JOIN production_country ON production_country.movie_id = movie.movie_id
+    LEFT JOIN country ON country.country_id = production_country.country_id
+    LEFT JOIN movie_languages ON movie_languages.movie_id = movie.movie_id
+    LEFT JOIN language ON language.language_id = movie_languages.language_id
     WHERE movie.movie_id = ?
   `;
+
+/*lo dejo aca por las moscas
+    LEFT JOIN movie_company ON movie_company.movie_id = movie.movie_id
+    LEFT JOIN production_company ON production_company.company_id = movie_company.company_id
+    LEFT JOIN language_role ON language_role.role_id = movie_languages.language_role_id
+        language_role.language_role,
+        production_company.company_name
+*/
 
     // Ejecutar la consulta
     db.all(query, [movieId], (err, rows) => {
@@ -100,24 +114,53 @@ app.get('/pelicula/:id', (req, res) => {
                 writers: [],
                 cast: [],
                 crew: [],
-                genre: []
+                genre: [],
+                country: rows[0].country_name,
+                language: rows[0].language_name,
+                //language_roles: [],
+                //companies: []
             };
 
             rows.forEach((row) =>{
                 if(row.genre_id && row.genre_name){
-                    if(row.genre_name){
-                        const isDuplicate = movieData.genre.some((gen) =>
-                        gen.genre_id === row.genre_id
-                        );
-                        if (!isDuplicate) {
-                                movieData.genre.push({
-                                    genre_name: row.genre_name,
-                                    genre_id: row.genre_id
-                                });
-                        }
+                    const isDuplicate = movieData.genre.some((gen) =>
+                    gen.genre_id === row.genre_id
+                    );
+                    if (!isDuplicate) {
+                            movieData.genre.push({
+                                genre_name: row.genre_name,
+                                genre_id: row.genre_id
+                            });
                     }
                 }
             })
+/*
+            rows.forEach((row) =>{
+                if(row.language_role){
+                    const isDuplicate = movieData.genre.some((role) =>
+                    role.language_role === row.language_role
+                    );
+                    if (!isDuplicate) {
+                            movieData.language_roles.push({
+                                role: row.language_role
+                            });
+                    }
+                }
+            })
+
+            rows.forEach((row) =>{
+                if(row.company_name){
+                    const isDuplicate = movieData.companies.some((comp) =>
+                    comp.company_name === row.company_name
+                    );
+                    if (!isDuplicate) {
+                            movieData.companies.push({
+                                company: row.company_name
+                            });
+                    }
+                }
+            })
+*/
 
             // Crear un objeto para almacenar directores
             rows.forEach((row) => {
