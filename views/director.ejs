@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Películas dirigidas por <%= directorName %></title>
+    <title>Películas con <%= directorName %></title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-<h1>Películas dirigidas por <%= directorName %></h1>
+<h1>Películas con <%= directorName %></h1>
+<h3>Peliculas dirigidas</h3>
 <ul>
     <% movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
         <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
     <% }); %>
+</ul>
+<h3>Peliculas como actor</h3>
+<ul>
+    <% actedMovies.forEach((mov) => { %>
+        <li>
+            In <%= mov.movie_name %>, the director played <%= mov.rol %>
+        </li>
+    <% }); %>
+    
 </ul>
 <p></p>
 <div id="inicio"><a href="/">Inicio</a></div>

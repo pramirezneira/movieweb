@@ -292,19 +292,29 @@ app.get('/director/:id', (req, res) => {
     // Consulta SQL para obtener las películas dirigidas por el director
     const query = `
     SELECT DISTINCT
-      person.person_name as directorName,
-      movie.*
+        person.person_name as directorName,
+        movie_crew.job as role,
+        movie.*
     FROM movie
     INNER JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
     INNER JOIN person ON person.person_id = movie_crew.person_id
-    WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;
+    WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?
+    UNION
+    SELECT DISTINCT
+        person.person_name as directorName,
+        movie_cast.character_name as role   ,
+        movie.*
+    FROM movie
+    INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
+    INNER JOIN person ON movie_cast.person_id = person.person_id
+    WHERE movie_cast.person_id = ?;
   `;
 
 
     // console.log('query = ', query)
 
     // Ejecutar la consulta
-    db.all(query, [directorId], (err, movies) => {
+    db.all(query, [directorId, directorId], (err, movies) => {
         if (err) {
             console.error(err);
             res.status(500).send('Error al cargar las películas del director.');
@@ -312,7 +322,17 @@ app.get('/director/:id', (req, res) => {
             // console.log('movies.length = ', movies.length)
             // Obtener el nombre del director
             const directorName = movies.length > 0 ? movies[0].directorName : '';
-            res.render('director', { directorName, movies });
+            const actedMovies = [];
+            movies.forEach((row) =>{
+                if (row.role !== 'Director'){
+                    actedMovies.push({
+                        movie_name: row.title,
+                        rol: row.role,
+                        nose: 'hola'
+                    })
+                }
+            })
+            res.render('director', { directorName, movies, actedMovies });
         }
     });
 });
