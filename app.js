@@ -69,13 +69,16 @@ app.get('/pelicula/:id', (req, res) => {
       movie_cast.character_name,
       movie_cast.cast_order,
       department.department_name,
-      movie_crew.job
+      movie_crew.job,   
+      genre.*
     FROM movie
     LEFT JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
     LEFT JOIN person as actor ON movie_cast.person_id = actor.person_id
     LEFT JOIN movie_crew ON movie.movie_id = movie_crew.movie_id
     LEFT JOIN department ON movie_crew.department_id = department.department_id
-    LEFT JOIN person as crew_member ON crew_member.person_id = movie_crew.person_id
+    LEFT JOIN person as crew_member ON crew_member.person_id = movie_crew.person_id 
+    LEFT JOIN movie_genres ON movie_genres.movie_id = movie.movie_id
+    LEFT JOIN genre ON genre.genre_id = movie_genres.genre_id
     WHERE movie.movie_id = ?
   `;
 
@@ -97,7 +100,24 @@ app.get('/pelicula/:id', (req, res) => {
                 writers: [],
                 cast: [],
                 crew: [],
+                genre: []
             };
+
+            rows.forEach((row) =>{
+                if(row.genre_id && row.genre_name){
+                    if(row.genre_name){
+                        const isDuplicate = movieData.genre.some((gen) =>
+                        gen.genre_id === row.genre_id
+                        );
+                        if (!isDuplicate) {
+                                movieData.genre.push({
+                                    genre_name: row.genre_name,
+                                    genre_id: row.genre_id
+                                });
+                        }
+                    }
+                }
+            })
 
             // Crear un objeto para almacenar directores
             rows.forEach((row) => {
@@ -188,7 +208,7 @@ app.get('/pelicula/:id', (req, res) => {
                 }
             });
 
-            res.render('pelicula', { movie: movieData });
+            res.render('pelicula', {movie: movieData});
         }
     });
 });
