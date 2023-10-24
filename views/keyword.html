@@ -92,18 +92,18 @@
         });
         form.addEventListener("input", (ev) => {
             if (input.value.length == 0) {
-                while (results.hasChildNodes()) results.removeChild(results.firstChild);
+                results.replaceChildren();
                 return;
             }
             fetch(`/api/autocomplete?q=${input.value}`).then(response => response.ok ? response.json().then((result) => {
-                while (results.hasChildNodes()) results.removeChild(results.firstChild);
+                results.replaceChildren();
                 for (keyword of result) {
                     const div = document.createElement("div");
                     div.className = "keyword"
                     div.textContent = keyword.keyword_name;
                     results.append(div);
                     div.addEventListener("click", (ev) => {
-                        input.value = div.textContent;
+                        window.location.href = `/keyword/${div.textContent}`;
                     });
                 }
             }) : response.text().then(result => alert(result)));

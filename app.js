@@ -103,17 +103,17 @@ app.get('/pelicula/:id', (req, res) => {
                 genre: []
             };
 
-            rows.forEach((row) =>{
-                if(row.genre_id && row.genre_name){
-                    if(row.genre_name){
+            rows.forEach((row) => {
+                if (row.genre_id && row.genre_name) {
+                    if (row.genre_name) {
                         const isDuplicate = movieData.genre.some((gen) =>
-                        gen.genre_id === row.genre_id
+                            gen.genre_id === row.genre_id
                         );
                         if (!isDuplicate) {
-                                movieData.genre.push({
-                                    genre_name: row.genre_name,
-                                    genre_id: row.genre_id
-                                });
+                            movieData.genre.push({
+                                genre_name: row.genre_name,
+                                genre_id: row.genre_id
+                            });
                         }
                     }
                 }
@@ -208,7 +208,7 @@ app.get('/pelicula/:id', (req, res) => {
                 }
             });
 
-            res.render('pelicula', {movie: movieData});
+            res.render('pelicula', { movie: movieData });
         }
     });
 });
@@ -291,6 +291,34 @@ app.get("/api/autocomplete", (req, res) => {
     db.all(query, [`%${q}%`], (err, rows) => {
         if (err) {
             console.log(err);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+        res.status(200).send(rows);
+    });
+});
+
+// Ruta para visualizar los resultados de la búsqueda por palabras clave
+app.get("/keyword/:q", (req, res) => {
+    res.status(200).sendFile(__dirname + "/views/keywords.html");
+});
+
+// Funcion para buscar por palabras clave
+app.get("/api/keyword", (req, res) => {
+    const { q } = req.query;
+    if (q == undefined) {
+        res.status(400).send("Bad Request");
+        return;
+    }
+    const query = `SELECT * FROM movie AS m WHERE m.movie_id
+    IN (SELECT m.movie_id FROM movie AS m
+    INNER JOIN movie_keywords AS mk ON m.movie_id
+    = mk.movie_id INNER JOIN keyword AS k
+    ON mk.keyword_id = k.keyword_id WHERE k.keyword_name
+    LIKE ?);`;
+    db.all(query, [`%${q}%`], (err, rows) => {
+        if (err) {
+            console.error(err);
             res.status(500).send("Internal Server Error");
             return;
         }
