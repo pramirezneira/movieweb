@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>MovieWeb</title>
     <style>
@@ -17,7 +18,8 @@
         h1 {
             font-size: 36px;
             color: #333333;
-            margin-bottom: 20px; /* Agregamos margen inferior para separar del input */
+            margin-bottom: 20px;
+            /* Agregamos margen inferior para separar del input */
         }
 
         form {
@@ -33,7 +35,7 @@
             margin-right: 10px;
         }
 
-        button[type="submit"] {
+        button[type="submit"], button {
             background-color: #0078d4;
             color: white;
             border: none;
@@ -43,16 +45,19 @@
             cursor: pointer;
         }
 
-        button[type="submit"]:hover {
+        button[type="submit"]:hover, button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
+
 <body>
-<h1>MovieWeb</h1>
-<form action="/buscar" method="GET">
-    <input type="text" name="q" placeholder="Buscar películas..." />
-    <button type="submit">Buscar</button>
-</form>
+    <h1>MovieWeb</h1>
+    <form action="/buscar" method="GET">
+        <input type="text" name="q" placeholder="Buscar películas..." />
+        <button type="submit">Buscar</button>
+    </form>
+    <button onclick="window.location.href = '/keyword'" style="margin-top: 3vh;">Keyword Search</button>
 </body>
+
 </html>
