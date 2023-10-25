@@ -402,6 +402,34 @@ app.get("/api/autocomplete", (req, res) => {
     });
 });
 
+// Ruta para visualizar los resultados de la búsqueda por palabras clave
+app.get("/keyword/:q", (req, res) => {
+    res.status(200).sendFile(__dirname + "/views/keywords.html");
+});
+
+// Funcion para buscar por palabras clave
+app.get("/api/keyword", (req, res) => {
+    const { q } = req.query;
+    if (q == undefined) {
+        res.status(400).send("Bad Request");
+        return;
+    }
+    const query = `SELECT * FROM movie AS m WHERE m.movie_id
+    IN (SELECT m.movie_id FROM movie AS m
+    INNER JOIN movie_keywords AS mk ON m.movie_id
+    = mk.movie_id INNER JOIN keyword AS k
+    ON mk.keyword_id = k.keyword_id WHERE k.keyword_name
+    LIKE ?);`;
+    db.all(query, [`%${q}%`], (err, rows) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+        res.status(200).send(rows);
+    });
+});
+
 app.get("/update", (req, res) => {
     res.sendFile(__dirname + "/views/update.html");
 });
