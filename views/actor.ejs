@@ -6,8 +6,15 @@
 </head>
 <body>
 <h1>Películas con <%= actorName %></h1>
+<h3>Peliculas como actor</h3>
 <ul>
-    <% movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
+    <% actedMovies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
+        <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>) as <%= movie.role %></a></li>
+    <% }); %>
+</ul>
+<h3>Peliculas como director</h3>
+<ul>
+    <% directedMovies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
         <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
     <% }); %>
 </ul>

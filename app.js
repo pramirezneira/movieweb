@@ -264,23 +264,53 @@ app.get('/actor/:id', (req, res) => {
     const query = `
     SELECT DISTINCT
       person.person_name as actorName,
+      movie_cast.character_name as role,
       movie.*
     FROM movie
     INNER JOIN movie_cast ON movie.movie_id = movie_cast.movie_id
     INNER JOIN person ON person.person_id = movie_cast.person_id
-    WHERE movie_cast.person_id = ?;
+    WHERE movie_cast.person_id = ?
+    UNION
+    SELECT DISTINCT
+    person.person_name as actorName,
+    movie_crew.job as role,
+    movie.*
+    FROM movie
+    INNER JOIN movie_crew ON movie_crew.movie_id = movie.movie_id
+    INNER JOIN person ON person.person_id = movie_crew.person_id
+    WHERE movie_crew.job LIKE 'Director' AND movie_crew.person_id = ?;
   `;
 
     // Ejecutar la consulta
-    db.all(query, [actorId], (err, movies) => {
+    db.all(query, [actorId, actorId], (err, movies) => {
         if (err) {
             console.error(err);
             res.status(500).send('Error al cargar las películas del actor.');
         } else {
             // Obtener el nombre del actor
             const actorName = movies.length > 0 ? movies[0].actorName : '';
-
-            res.render('actor', { actorName, movies });
+            const actedMovies = [];
+            const directedMovies = [];
+            // separo de la consulta las peliculas donde dirigió y donde actuó
+            movies.forEach((row) =>{
+                if (row.role !== 'Director'){
+                    actedMovies.push({
+                        release_date: row.release_date,
+                        movie_id: row.movie_id,
+                        title: row.title,
+                        role: row.role
+                    })
+                }
+                else {
+                    directedMovies.push({
+                        release_date: row.release_date,
+                        movie_id: row.movie_id,
+                        title: row.title,
+                        role: row.role
+                    })
+                }
+            })
+            res.render('actor', { actorName, directedMovies, actedMovies });
         }
     });
 });
@@ -323,16 +353,27 @@ app.get('/director/:id', (req, res) => {
             // Obtener el nombre del director
             const directorName = movies.length > 0 ? movies[0].directorName : '';
             const actedMovies = [];
+            const directedMovies = [];
             movies.forEach((row) =>{
+            // separo de la consulta las peliculas donde dirigió y donde actuó
                 if (row.role !== 'Director'){
                     actedMovies.push({
-                        movie_name: row.title,
+                        title: row.title,
+                        release_date: row.release_date,
+                        movie_id: row.movie_id,
                         rol: row.role,
-                        nose: 'hola'
+                    })
+                }
+                else {
+                    directedMovies.push({
+                        title: row.title,
+                        release_date: row.release_date,
+                        movie_id: row.movie_id,
+                        rol: row.role,
                     })
                 }
             })
-            res.render('director', { directorName, movies, actedMovies });
+            res.render('director', { directorName, directedMovies, actedMovies });
         }
     });
 });
