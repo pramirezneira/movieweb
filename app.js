@@ -481,6 +481,10 @@ app.post("/api/update", upload.single("zipFile"), async (req, res) => {
     }
 });
 
+app.get("/cinema", (req, res) => {
+    res.sendFile(__dirname + "/cinema.jpg");
+});
+
 // Iniciar el servidor
 app.listen(port, () => {
     console.log(`Servidor en ejecución en http://localhost:${port}`);
