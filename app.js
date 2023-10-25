@@ -120,13 +120,13 @@ app.get('/pelicula/:id', (req, res) => {
     WHERE movie.movie_id = ?
   `;
 
-/*lo dejo aca por las moscas
-    LEFT JOIN movie_company ON movie_company.movie_id = movie.movie_id
-    LEFT JOIN production_company ON production_company.company_id = movie_company.company_id
-    LEFT JOIN language_role ON language_role.role_id = movie_languages.language_role_id
-        language_role.language_role,
-        production_company.company_name
-*/
+    /*lo dejo aca por las moscas
+        LEFT JOIN movie_company ON movie_company.movie_id = movie.movie_id
+        LEFT JOIN production_company ON production_company.company_id = movie_company.company_id
+        LEFT JOIN language_role ON language_role.role_id = movie_languages.language_role_id
+            language_role.language_role,
+            production_company.company_name
+    */
 
     // Ejecutar la consulta
     db.all(query, [movieId], (err, rows) => {
@@ -153,46 +153,46 @@ app.get('/pelicula/:id', (req, res) => {
                 //companies: []
             };
 
-            rows.forEach((row) =>{
-                if(row.genre_id && row.genre_name){
+            rows.forEach((row) => {
+                if (row.genre_id && row.genre_name) {
                     const isDuplicate = movieData.genre.some((gen) =>
-                    gen.genre_id === row.genre_id
+                        gen.genre_id === row.genre_id
                     );
                     if (!isDuplicate) {
-                            movieData.genre.push({
-                                genre_name: row.genre_name,
-                                genre_id: row.genre_id
-                            });
+                        movieData.genre.push({
+                            genre_name: row.genre_name,
+                            genre_id: row.genre_id
+                        });
                     }
                 }
             })
-/*
-            rows.forEach((row) =>{
-                if(row.language_role){
-                    const isDuplicate = movieData.genre.some((role) =>
-                    role.language_role === row.language_role
-                    );
-                    if (!isDuplicate) {
-                            movieData.language_roles.push({
-                                role: row.language_role
-                            });
-                    }
-                }
-            })
-
-            rows.forEach((row) =>{
-                if(row.company_name){
-                    const isDuplicate = movieData.companies.some((comp) =>
-                    comp.company_name === row.company_name
-                    );
-                    if (!isDuplicate) {
-                            movieData.companies.push({
-                                company: row.company_name
-                            });
-                    }
-                }
-            })
-*/
+            /*
+                        rows.forEach((row) =>{
+                            if(row.language_role){
+                                const isDuplicate = movieData.genre.some((role) =>
+                                role.language_role === row.language_role
+                                );
+                                if (!isDuplicate) {
+                                        movieData.language_roles.push({
+                                            role: row.language_role
+                                        });
+                                }
+                            }
+                        })
+            
+                        rows.forEach((row) =>{
+                            if(row.company_name){
+                                const isDuplicate = movieData.companies.some((comp) =>
+                                comp.company_name === row.company_name
+                                );
+                                if (!isDuplicate) {
+                                        movieData.companies.push({
+                                            company: row.company_name
+                                        });
+                                }
+                            }
+                        })
+            */
 
             // Crear un objeto para almacenar directores
             rows.forEach((row) => {
@@ -283,7 +283,7 @@ app.get('/pelicula/:id', (req, res) => {
                 }
             });
 
-            res.render('pelicula', {movie: movieData});
+            res.render('pelicula', { movie: movieData });
         }
     });
 });
@@ -324,8 +324,8 @@ app.get('/actor/:id', (req, res) => {
             const actedMovies = [];
             const directedMovies = [];
             // separo de la consulta las peliculas donde dirigió y donde actuó
-            movies.forEach((row) =>{
-                if (row.role !== 'Director'){
+            movies.forEach((row) => {
+                if (row.role !== 'Director') {
                     actedMovies.push({
                         release_date: row.release_date,
                         movie_id: row.movie_id,
@@ -386,9 +386,9 @@ app.get('/director/:id', (req, res) => {
             const directorName = movies.length > 0 ? movies[0].directorName : '';
             const actedMovies = [];
             const directedMovies = [];
-            movies.forEach((row) =>{
-            // separo de la consulta las peliculas donde dirigió y donde actuó
-                if (row.role !== 'Director'){
+            movies.forEach((row) => {
+                // separo de la consulta las peliculas donde dirigió y donde actuó
+                if (row.role !== 'Director') {
                     actedMovies.push({
                         title: row.title,
                         release_date: row.release_date,

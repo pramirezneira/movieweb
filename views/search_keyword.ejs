@@ -35,7 +35,8 @@
             margin-right: 10px;
         }
 
-        button[type="submit"] {
+        button[type="submit"],
+        button {
             background-color: #0078d4;
             color: white;
             border: none;
@@ -45,7 +46,8 @@
             cursor: pointer;
         }
 
-        button[type="submit"]:hover {
+        button[type="submit"]:hover,
+        button:hover {
             background-color: #0056b3;
         }
 
@@ -57,7 +59,6 @@
         div#results {
             top: 0;
             background-color: white;
-            border-radius: 1vw;
             cursor: pointer;
             margin-bottom: 2vh;
         }
@@ -76,12 +77,13 @@
 
 <body>
     <div>
-    <h1>MovieWeb</h1>
-    <form action="/buscar" method="GET" id="form">
-        <input type="text" name="q" placeholder="Buscar películas..." id="input" />
-        <button type="submit">Buscar</button>
-        <div id="results"></div>
-    </form>
+        <h1>MovieWeb</h1>
+        <form action="/buscar" method="GET" id="form">
+            <input type="text" name="q" placeholder="Buscar películas..." id="input" />
+            <button type="submit">Buscar</button>
+            <div id="results"></div>
+        </form>
+        <button onclick="window.location.href = '/'" style="margin-top: 1vh;">Inicio</button>
     </div>
     <script>
         const form = document.getElementById("form");
@@ -93,7 +95,9 @@
         });
         form.addEventListener("input", (ev) => {
             if (input.value.length == 0) {
-                results.replaceChildren();
+                setTimeout(() => {
+                    results.replaceChildren();
+                }, 30);
                 return;
             }
             fetch(`/api/autocomplete?q=${input.value}`).then(response => response.ok ? response.json().then((result) => {

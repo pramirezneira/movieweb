@@ -35,7 +35,8 @@
             margin-right: 10px;
         }
 
-        button[type="submit"], button {
+        button[type="submit"],
+        button {
             background-color: #0078d4;
             color: white;
             border: none;
@@ -45,7 +46,8 @@
             cursor: pointer;
         }
 
-        button[type="submit"]:hover, button:hover {
+        button[type="submit"]:hover,
+        button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -54,10 +56,10 @@
 <body>
     <h1>MovieWeb</h1>
     <form action="/buscar" method="GET">
-        <input type="text" name="q" placeholder="Buscar películas..." />
+        <input type="text" name="q" placeholder="Buscar películas o personas..." />
         <button type="submit">Buscar</button>
     </form>
-    <button onclick="window.location.href = '/keyword'" style="margin-top: 3vh;">Keyword Search</button>
+    <button onclick="window.location.href = '/keyword'" style="margin-top: 3vh;">Buscar por palabras clave</button>
 </body>
 
 </html>
