@@ -412,7 +412,7 @@ app.get('/director/:id', (req, res) => {
 
 // Ruta para buscar por palabras clave
 app.get("/keyword", (req, res) => {
-    res.sendFile(__dirname + "/views/keyword.html");
+    res.render(__dirname + "/views/search_keyword.ejs");
 });
 
 // Funcion para autocompletar la búsqueda
@@ -436,7 +436,7 @@ app.get("/api/autocomplete", (req, res) => {
 
 // Ruta para visualizar los resultados de la búsqueda por palabras clave
 app.get("/keyword/:q", (req, res) => {
-    res.status(200).sendFile(__dirname + "/views/keywords.html");
+    res.status(200).render(__dirname + "/views/resultados_keywords.ejs");
 });
 
 // Funcion para buscar por palabras clave

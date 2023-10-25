@@ -89,6 +89,7 @@
         const results = document.getElementById("results");
         form.addEventListener("submit", (ev) => {
             ev.preventDefault();
+            window.location.href = `keyword/${input.value}`;
         });
         form.addEventListener("input", (ev) => {
             if (input.value.length == 0) {
