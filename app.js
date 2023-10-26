@@ -120,14 +120,6 @@ app.get('/pelicula/:id', (req, res) => {
     WHERE movie.movie_id = ?
   `;
 
-    /*lo dejo aca por las moscas
-        LEFT JOIN movie_company ON movie_company.movie_id = movie.movie_id
-        LEFT JOIN production_company ON production_company.company_id = movie_company.company_id
-        LEFT JOIN language_role ON language_role.role_id = movie_languages.language_role_id
-            language_role.language_role,
-            production_company.company_name
-    */
-
     // Ejecutar la consulta
     db.all(query, [movieId], (err, rows) => {
         if (err) {
@@ -166,34 +158,6 @@ app.get('/pelicula/:id', (req, res) => {
                     }
                 }
             })
-            /*
-                        rows.forEach((row) =>{
-                            if(row.language_role){
-                                const isDuplicate = movieData.genre.some((role) =>
-                                role.language_role === row.language_role
-                                );
-                                if (!isDuplicate) {
-                                        movieData.language_roles.push({
-                                            role: row.language_role
-                                        });
-                                }
-                            }
-                        })
-            
-                        rows.forEach((row) =>{
-                            if(row.company_name){
-                                const isDuplicate = movieData.companies.some((comp) =>
-                                comp.company_name === row.company_name
-                                );
-                                if (!isDuplicate) {
-                                        movieData.companies.push({
-                                            company: row.company_name
-                                        });
-                                }
-                            }
-                        })
-            */
-
             // Crear un objeto para almacenar directores
             rows.forEach((row) => {
                 if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
