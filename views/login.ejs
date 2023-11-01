@@ -96,7 +96,7 @@
                 body: JSON.stringify({ name: input.value })
             });
             const result = await response.text();
-            if (!esponse.ok) alert(result);
+            if (!response.ok) alert(result);
             location.reload();
         });
         fetch("/api/users").then(response => !response.ok ? response.text().then(result => alert(result)) : response.json().then(result => {
