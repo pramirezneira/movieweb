@@ -12,6 +12,7 @@
     <h1>
         <%= movie.title %>
     </h1>
+    <a id="add" href="">Agregar a la lista</a>
     <h3>Fecha: <%= movie.release_date %>
     </h3>
     <h3>Dirigida por: </h3>
@@ -72,6 +73,18 @@
     </ul>
     <p></p>
     <div id="inicio"><a href="/">Inicio</a></div>
+    <script>
+        const add = document.getElementById("add");
+        add.addEventListener("click", async (ev) => {
+            ev.preventDefault();
+            const response = await fetch("/api/watchlist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: localStorage.getItem("userId"), movieId: location.href.split("/")[4] })
+            });
+            response.text().then(result => alert(result));
+        });
+    </script>
 </body>
 
 </html>

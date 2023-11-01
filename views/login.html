@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        div#user-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+        }
+
+        div.user {
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            width: 18%;
+            margin: 1%;
+            border-radius: 100vw;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            font-size: 3vw;
+            background-color: lightgray;
+            cursor: pointer;
+        }
+
+        div.user:hover {
+            background-color: lightblue;
+            outline: .5vw solid black;
+        }
+
+        form {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid black;
+            align-items: center;
+            cursor: pointer;
+            padding: 2%;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="user-container"></div>
+    <form id="form" class="hidden">
+        <button type="button" id="close">X</button><br>
+        <label for="name">Agregar usuario</label>
+        <input type="text" id="input" name="name" placeholder="Nombre...">
+    </form>
+    <form id="delete-form" class="hidden">
+        <button id="close2">X</button><br>
+        <button id="delete-button">Delete user</button>
+    </form>
+    <script async>
+        const input = document.getElementById("input");
+        const form = document.getElementById("form");
+        const userContainer = document.getElementById("user-container");
+        const closeButton = document.getElementById("close");
+        const deleteForm = document.getElementById("delete-form");
+        const deleteButton = document.getElementById("delete-button");
+        form.addEventListener("submit", async (ev) => {
+            ev.preventDefault();
+            const response = await fetch("/api/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: input.value })
+            });
+            const result = await response.text();
+            alert(result);
+            location.reload();
+        });
+        fetch("/api/users").then(response => !response.ok ? response.text().then(result => alert(result)) : response.json().then(result => {
+            function addListener(ev) {
+                form.className = "";
+            }
+            if (result.length == 0) {
+                const div = document.createElement("div");
+                div.className = "user";
+                div.textContent = "Agregar Usuario";
+                div.addEventListener("click", addListener);
+                userContainer.append(div);
+                return;
+            }
+            result.forEach(user => {
+                const div = document.createElement("div");
+                div.className = "user";
+                div.textContent = user.name;
+                div.setAttribute("id", user.id);
+                div.addEventListener("contextmenu", (ev) => {
+                    ev.preventDefault();
+                    deleteForm.className = "";
+                    deleteButton.setAttribute("id", div.getAttribute("id"));
+                });
+                div.addEventListener("click", (ev) => {
+                    localStorage.setItem("userId", div.getAttribute("id"));
+                    location.href = "/home";
+                });
+                userContainer.append(div);
+            });
+            if (result.length < 5) {
+                const div = document.createElement("div");
+                div.className = "user";
+                div.textContent = "Agregar Usuario";
+                div.addEventListener("click", addListener);
+                userContainer.append(div);
+            }
+        }));
+        closeButton.addEventListener("click", (ev) => {
+            form.className = "hidden";
+        });
+        deleteButton.addEventListener("click", async (ev) => {
+            ev.preventDefault();
+            const response = await fetch("/api/users", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: deleteButton.getAttribute("id") })
+            });
+            const result = await response.text();
+            alert(result);
+            location.reload();
+        });
+    </script>
+</body>
+
+</html>

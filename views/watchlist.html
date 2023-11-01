@@ -21,7 +21,7 @@
     <script>
         const results = document.getElementById("results");
         const paragraph = document.getElementById("paragraph");
-        fetch(`/api/keyword?q=${window.location.href.split("/")[4]}`).then((response) => response.ok ? response.json().then((result) => {
+        fetch(`/api/watchlist/${localStorage.getItem("userId")}`).then((response) => response.ok ? response.json().then((result) => {
             if (result.length == 0) {
                 paragraph.className = "";
                 results.className = "invisible";

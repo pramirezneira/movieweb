@@ -16,14 +16,21 @@ app.use(express.static('views'));
 // Conectar a la base de datos SQLite
 const db = new sqlite3.Database(process.env.DATABASE != null ? __dirname + process.env.DATABASE : 'C:\\Users\\Pablo\\OneDrive - Universidad Austral\\Bases de Datos y Recursos de Información\\Unidad 5 El lenguaje de consulta SQL\\datagrip\\movies.db');
 
+const users = new sqlite3.Database(__dirname + process.env.USERS);
+
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
 // Configurar parser de JSON
 app.use(express.json());
 
+// Ruta para el login
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/views/login.html");
+});
+
 // Ruta para la página de inicio
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
     res.render('index');
 });
 
@@ -130,7 +137,7 @@ app.get('/pelicula/:id', (req, res) => {
         } else {
             // Organizar los datos en un objeto de película con elenco y crew
             const movieData = {
-                id: rows[0].id,
+                id: rows[0].movie_id,
                 title: rows[0].title,
                 release_date: rows[0].release_date,
                 overview: rows[0].overview,
@@ -443,6 +450,134 @@ app.post("/api/update", upload.single("zipFile"), async (req, res) => {
         console.error(error);
         res.status(500).send(`${error}`);
     }
+});
+
+/**
+ * @returns {Promise<any[]>}
+ */
+async function getUsers() {
+    return new Promise((resolve, reject) => {
+        users.all("SELECT * FROM user", (err, rows) => {
+            if (err) reject(err);
+            resolve(rows);
+        });
+    });
+}
+
+app.get("/api/users", async (req, res) => {
+    try {
+        const result = await getUsers();
+        res.status(200).send(result);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+});
+
+app.post("/api/users", async (req, res) => {
+    const { name } = req.body;
+    if (!name) {
+        res.sendStatus(400);
+        return;
+    }
+    try {
+        const result = await getUsers();
+        if (result.length >= 5) {
+            res.sendStatus(403);
+            return;
+        }
+        users.all("INSERT INTO user VALUES (null, ?)", [name], (err, rows) => {
+            if (err) {
+                console.error(err);
+                res.sendStatus(500);
+                return;
+            }
+            res.status(200).send("Usuario agregado");
+        });
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+});
+
+app.patch("/api/users", (req, res) => {
+    const { id, name } = req.body;
+    if (id == undefined || !name) {
+        res.sendStatus(400);
+        return;
+    }
+    users.all("UPDATE user SET name = ? WHERE id = ?", [name, id], (err, rows) => {
+        if (err) {
+            console.error(err);
+            res.sendStatus(500);
+            return;
+        }
+        res.status(200).send("Usuario actualizado");
+    });
+});
+
+app.delete("/api/users", (req, res) => {
+    const { id } = req.body;
+    if (id == undefined) {
+        res.statusCode(400);
+        return;
+    }
+    users.all("DELETE FROM user WHERE id = ?", [id], (err, rows) => {
+        if (err) {
+            console.error(err);
+            res.statusCode(500);
+            return;
+        }
+        res.status(200).send("Usuario eliminado");
+    })
+});
+
+app.get("/watchlist", (req, res) => {
+    res.status(200).sendFile(__dirname + "/views/watchlist.html");
+});
+
+app.get("/api/watchlist/:id", (req, res) => {
+    const { id } = req.params;
+    if (id == undefined) {
+        res.sendStatus(400);
+        return;
+    }
+    users.all("SELECT movie_id FROM watchlist WHERE user_id = ?", [id], (err, rows) => {
+        if (err) {
+            console.error(err);
+            res.sendStatus(500);
+            return;
+        }
+        const movieId = rows.map(movie => movie.movie_id);
+        db.all("SELECT * FROM movie WHERE movie_id IN (?)", [movieId.join(",")], (err, rows) => {
+            if (err) {
+                console.error(err);
+                res.sendStatus(500);
+                return;
+            }
+            res.status(200).send(rows);
+        });
+    });
+});
+
+app.post("/api/watchlist", (req, res) => {
+    const { userId, movieId } = req.body;
+    if (userId == undefined || movieId == undefined) {
+        res.sendStatus(400);
+        return;
+    }
+    users.all("INSERT INTO watchlist VALUES (?, ?)", [userId, movieId], (err, rows) => {
+        if (err && err.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: watchlist.user_id, watchlist.movie_id") {
+            res.status(200).send("La película ya se encuentra en la lista");
+            return;
+        }
+        if (err) {
+            console.error(err);
+            res.sendStatus(500);
+            return;
+        }
+        res.status(200).send("Película agregada a la lista");
+    });
 });
 
 app.get("/cinema", (req, res) => {
