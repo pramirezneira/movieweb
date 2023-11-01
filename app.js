@@ -26,7 +26,7 @@ app.use(express.json());
 
 // Ruta para el login
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/views/login.html");
+    res.render("login");
 });
 
 // Ruta para la página de inicio
@@ -434,7 +434,7 @@ app.get("/api/keyword", (req, res) => {
 });
 
 app.get("/update", (req, res) => {
-    res.sendFile(__dirname + "/views/update.html");
+    res.render("update");
 });
 
 app.post("/api/update", upload.single("zipFile"), async (req, res) => {
@@ -533,7 +533,7 @@ app.delete("/api/users", (req, res) => {
 });
 
 app.get("/watchlist", (req, res) => {
-    res.status(200).sendFile(__dirname + "/views/watchlist.html");
+    res.status(200).render("watchlist");
 });
 
 app.get("/api/watchlist/:id", (req, res) => {
