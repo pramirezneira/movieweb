@@ -36,6 +36,8 @@
             font-size: 3vw;
             background-color: lightgray;
             cursor: pointer;
+            opacity: 0;
+            transition: all 1s ease;
         }
 
         div.user:hover {
@@ -65,12 +67,13 @@
             color: #333333;
             margin-bottom: 20px;
             /* Agregamos margen inferior para separar del input */
+            transition: all 1s ease;
         }
     </style>
 </head>
 
 <body>
-    <h1>MovieWeb</h1>
+    <h1 id="h1" style="opacity: 0;">MovieWeb</h1>
     <div id="user-container"></div>
     <form id="form" class="hidden">
         <button type="button" id="close">X</button><br>
@@ -78,7 +81,7 @@
         <input type="text" id="input" name="name" placeholder="Nombre...">
     </form>
     <form id="delete-form" class="hidden">
-        <button id="close2">X</button><br>
+        <button id="close2" type="button">X</button><br>
         <button id="delete-button">Eliminar usuario</button>
     </form>
     <script async>
@@ -88,6 +91,11 @@
         const closeButton = document.getElementById("close");
         const deleteForm = document.getElementById("delete-form");
         const deleteButton = document.getElementById("delete-button");
+        const closeButton2 = document.getElementById("close2");
+        const h1 = document.getElementById("h1");
+        setTimeout(() => {
+            h1.style.opacity = 1;
+        }, 20);
         form.addEventListener("submit", async (ev) => {
             ev.preventDefault();
             const response = await fetch("/api/users", {
@@ -109,6 +117,9 @@
                 div.textContent = "Agregar Usuario";
                 div.addEventListener("click", addListener);
                 userContainer.append(div);
+                setTimeout(() => {
+                    div.style.opacity = 1;
+                }, 20);
                 return;
             }
             result.forEach(user => {
@@ -126,6 +137,9 @@
                     location.href = "/home";
                 });
                 userContainer.append(div);
+                setTimeout(() => {
+                    div.style.opacity = 1;
+                }, 20);
             });
             if (result.length < 5) {
                 const div = document.createElement("div");
@@ -133,6 +147,9 @@
                 div.textContent = "Agregar Usuario";
                 div.addEventListener("click", addListener);
                 userContainer.append(div);
+                setTimeout(() => {
+                    div.style.opacity = 1;
+                }, 20);
             }
         }));
         closeButton.addEventListener("click", (ev) => {
@@ -148,6 +165,9 @@
             const result = await response.text();
             if (!response.ok) alert(result);
             location.reload();
+        });
+        closeButton2.addEventListener("click", (ev) => {
+            deleteForm.className = "hidden";
         });
     </script>
 </body>
