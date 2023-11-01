@@ -548,14 +548,14 @@ app.get("/api/watchlist/:id", (req, res) => {
             res.sendStatus(500);
             return;
         }
-        const movieId = rows.map(movie => movie.movie_id);
-        db.all("SELECT * FROM movie WHERE movie_id IN (?)", [movieId.join(",")], (err, rows) => {
+        const movieIds = rows.map(movie => movie.movie_id);
+        db.all(`SELECT * FROM movie WHERE movie_id IN (${movieIds.join(", ")})`, (err2, rows2) => {
             if (err) {
-                console.error(err);
+                console.error(err2);
                 res.sendStatus(500);
                 return;
             }
-            res.status(200).send(rows);
+            res.status(200).send(rows2);
         });
     });
 });
