@@ -12,7 +12,7 @@
     <h1>
         <%= movie.title %>
     </h1>
-    <a id="add" href="">Agregar a la lista</a>
+    <a id="add" href=""></a>
     <h3>Fecha: <%= movie.release_date %>
     </h3>
     <h3>Dirigida por: </h3>
@@ -75,15 +75,36 @@
     <div id="inicio"><a href="/home">Inicio</a></div>
     <script>
         const add = document.getElementById("add");
-        add.addEventListener("click", async (ev) => {
-            ev.preventDefault();
-            const response = await fetch("/api/watchlist", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: localStorage.getItem("userId"), movieId: location.href.split("/")[4] })
-            });
-            response.text().then(result => alert(result));
-        });
+        fetch(`/api/isinwatchlist?userId=${localStorage.getItem("userId")}&movieId=${location.href.split("/")[4]}`).then(response => !response.ok ? response.text().then(result => alert(result)) : response.text().then(result => {
+            if (result == "false") {
+                add.textContent = "Agregar a la lista";
+                add.addEventListener("click", ev => {
+                    ev.preventDefault();
+                    fetch("/api/watchlist", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ userId: localStorage.getItem("userId"), movieId: location.href.split("/")[4] })
+                    }).then(response2 => response2.text().then(result2 => {
+                        alert(result2);
+                        location.reload();
+                    }));
+                });
+                return;
+            } else if (result == "true") {
+                add.textContent = "Eliminar de la lista";
+                add.addEventListener("click", ev => {
+                    ev.preventDefault();
+                    fetch("/api/watchlist", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ userId: localStorage.getItem("userId"), movieId: location.href.split("/")[4] })
+                    }).then(response2 => response2.text().then(result2 => {
+                        alert(result2);
+                        location.reload();
+                    }));
+                });
+            }
+        }));
     </script>
 </body>
 

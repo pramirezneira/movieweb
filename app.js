@@ -580,6 +580,39 @@ app.post("/api/watchlist", (req, res) => {
     });
 });
 
+app.delete("/api/watchlist", (req, res) => {
+    const { userId, movieId } = req.body;
+    if (userId == undefined || movieId == undefined) {
+        res.sendStatus(400);
+        return;
+    }
+    users.all("DELETE FROM watchlist WHERE user_id = ? AND movie_id = ?", [userId, movieId], (err, rows) => {
+        if (err) {
+            console.error(err);
+            res.sendStatus(500);
+            return;
+        }
+        res.status(200).send("Película eliminada de la lista");
+    });
+});
+
+app.get("/api/isinwatchlist", (req, res) => {
+    const { userId, movieId } = req.query;
+    if (userId == undefined && movieId == undefined) {
+        res.sendStatus(400);
+        return;
+    }
+    users.all("SELECT movie_id FROM watchlist WHERE movie_id = ? AND user_id = ?", [movieId, userId], (err, rows) => {
+        if (err) {
+            console.error(err);
+            res.sendStatus(500);
+            return;
+        }
+        if (rows.length == 0) res.status(200).send(false);
+        else res.status(200).send(true);
+    });
+});
+
 app.get("/cinema", (req, res) => {
     res.sendFile(__dirname + "/cinema.jpg");
 });

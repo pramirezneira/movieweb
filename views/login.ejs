@@ -79,7 +79,7 @@
     </form>
     <form id="delete-form" class="hidden">
         <button id="close2">X</button><br>
-        <button id="delete-button">Delete user</button>
+        <button id="delete-button">Eliminar usuario</button>
     </form>
     <script async>
         const input = document.getElementById("input");
@@ -96,7 +96,7 @@
                 body: JSON.stringify({ name: input.value })
             });
             const result = await response.text();
-            alert(result);
+            if (!esponse.ok) alert(result);
             location.reload();
         });
         fetch("/api/users").then(response => !response.ok ? response.text().then(result => alert(result)) : response.json().then(result => {
@@ -146,7 +146,7 @@
                 body: JSON.stringify({ id: deleteButton.getAttribute("id") })
             });
             const result = await response.text();
-            alert(result);
+            if (!response.ok) alert(result);
             location.reload();
         });
     </script>
