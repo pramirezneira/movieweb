@@ -3,45 +3,41 @@
 
 <head>
     <title>
-        <%= movie.title %>
+        <%= movie.movie[0].title %>
     </title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
     <h1>
-        <%= movie.title %>
+        <%= movie.movie[0].title %>
     </h1>
     <a id="add" href=""></a>
-    <h3>Fecha: <%= movie.release_date %>
+    <h3>Fecha: <%= movie.movie[0].release_date %>
     </h3>
     <h3>Dirigida por: </h3>
     <ul>
-        <% movie.directors.forEach((director)=> { %>
-            <li>
-                <a href="/director/<%= director.crew_member_id %>">
-                    <%= director.crew_member_name %>
-                </a>
-            </li>
-            <% }); %>
+        <li>
+            <a href="/director/<%= movie.movie[0].d_id %>">
+                <%= movie.movie[0].director %>
+            </a>
+        </li>
     </ul>
     <h3>Escrita por: </h3>
     <ul>
-        <% movie.writers.forEach((writer)=> { %>
-            <li>
-                <%= writer.crew_member_name %>
-            </li>
-            <% }); %>
+        <li>
+            <%= movie.movie[0].writer %>
+        </li>
     </ul>
     <h3>Idioma:</h3>
     <div id="language">
         <p>
-            <%= movie.language %>
+            <%= movie.movie[0].language_name %>
         </p>
     </div>
     <h3>Géneros: </h3>
     <ul>
-        <% movie.genre.forEach((gen)=> { %>
+        <% movie.genre.forEach(gen=> { %>
             <li>
                 <%= gen.genre_name %>
             </li>
@@ -50,23 +46,23 @@
     <h3>Argumento:</h3>
     <div id="overview">
         <p>
-            <%= movie.overview %>
+            <%= movie.movie[0].overview %>
         </p>
     </div>
     <h3>Elenco:</h3>
     <ul>
-        <% movie.cast.sort((a, b)=> a.cast_order - b.cast_order).forEach((actor) => { %>
-            <li><a href="/actor/<%= actor.actor_id %>">
-                    <%= actor.actor_name %>
+        <% movie.cast.forEach(actor=> { %>
+            <li><a href="/actor/<%= actor.person_id %>">
+                    <%= actor.person_name %>
                 </a> - <%= actor.character_name %>
             </li>
             <% }); %>
     </ul>
     <h3>Equipo:</h3>
     <ul>
-        <% movie.crew.forEach((crewMember)=> { %>
+        <% movie.crew.forEach(crewMember=> { %>
             <li>
-                <%= crewMember.crew_member_name %> - <%= crewMember.department_name %>
+                <%= crewMember.person_name %> - <%= crewMember.department_name %>
                         (<%= crewMember.job %>)
             </li>
             <% }); %>
