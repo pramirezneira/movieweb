@@ -98,32 +98,18 @@ app.get('/pelicula/:id', (req, res) => {
     const movieId = req.params.id;
 
     // Consulta SQL para obtener los datos de la película, elenco y crew
-    const movieQuery = `SELECT m.*, l.language_name, writer.person_id AS w_id,
-    writer.person_name AS writer, director.person_id AS d_id,
-    director.person_name AS director
+    const movieQuery = `SELECT m.*, l.language_name
     FROM movie AS m
     INNER JOIN movie_languages AS ml
     ON m.movie_id = ml.movie_id
     INNER JOIN language AS l
     ON ml.language_id = l.language_id
-    INNER JOIN (SELECT mcr.movie_id, p.person_id, p.person_name
-    FROM person AS p
-    INNER JOIN movie_crew AS mcr
-    ON p.person_id = mcr.person_id
-    WHERE movie_id = ? AND mcr.job = 'Writer') AS writer
-    ON m.movie_id = writer.movie_id
-    INNER JOIN (SELECT mcr.movie_id, p.person_id, p.person_name
-    FROM person AS p
-    INNER JOIN movie_crew AS mcr
-    ON p.person_id = mcr.person_id
-    WHERE movie_id = ? AND mcr.job = 'Director') AS director
-    ON m.movie_id = director.movie_id
     WHERE m.movie_id = ? AND ml.language_role_id = 1;`;
 
     const castQuery = `SELECT p.*, mca.character_name FROM person AS p
     INNER JOIN movie_cast AS mca
     ON p.person_id = mca.person_id WHERE mca.movie_id = ?
-    ORDER BY cast_order;`;
+    ORDER BY cast_order;`
 
     const crewQuery = `SELECT p.*, mcr.job, d.department_name FROM person AS p
     INNER JOIN movie_crew AS mcr
@@ -136,9 +122,21 @@ app.get('/pelicula/:id', (req, res) => {
     INNER JOIN movie_genres AS mg
     ON g.genre_id = mg.genre_id WHERE mg.movie_id = ?;`;
 
+    const directorQuery = `SELECT p.person_id, p.person_name
+    FROM person AS p
+    INNER JOIN movie_crew AS mcr
+    ON p.person_id = mcr.person_id
+    WHERE movie_id = ? AND mcr.job = 'Director';`;
+
+    const writerQuery = `SELECT p.person_id, p.person_name
+    FROM person AS p
+    INNER JOIN movie_crew AS mcr
+    ON p.person_id = mcr.person_id
+    WHERE movie_id = ? AND mcr.job = 'Writer';`;
+
     const movieData = {};
 
-    db.all(movieQuery, [movieId, movieId, movieId], (err, rows) => {
+    db.all(movieQuery, [movieId], (err, rows) => {
         if (err) {
             console.error(err);
             res.status(500).send("Error al cargar los datos de la película.");
@@ -170,8 +168,23 @@ app.get('/pelicula/:id', (req, res) => {
                         return;
                     }
                     movieData.genre = rows;
-                    console.log(movieData);
-                    res.render('pelicula', { movie: movieData });
+                    db.all(directorQuery, [movieId], (err, rows) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send("Error al cargar los datos de la película.");
+                            return;
+                        }
+                        movieData.director = rows;
+                        db.all(writerQuery, [movieId], (err, rows) => {
+                            if (err) {
+                                console.error(err);
+                                res.status(500).send("Error al cargar los datos de la película.");
+                                return;
+                            }
+                            movieData.writer = rows;
+                            res.render('pelicula', { movie: movieData });
+                        });
+                    });
                 });
             });
         });

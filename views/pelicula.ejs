@@ -17,17 +17,21 @@
     </h3>
     <h3>Dirigida por: </h3>
     <ul>
-        <li>
-            <a href="/director/<%= movie.movie[0].d_id %>">
-                <%= movie.movie[0].director %>
-            </a>
-        </li>
+        <% movie.director.forEach(director=> { %>
+            <li>
+                <a href="/director/<%= director.person_id %>">
+                    <%= director.person_name %>
+                </a>
+            </li>
+            <% }); %>
     </ul>
     <h3>Escrita por: </h3>
     <ul>
-        <li>
-            <%= movie.movie[0].writer %>
-        </li>
+        <% movie.writer.forEach(writer=> { %>
+            <li>
+                <%= writer.person_name %>
+            </li>
+            <% }); %>
     </ul>
     <h3>Idioma:</h3>
     <div id="language">
