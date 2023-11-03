@@ -39,6 +39,22 @@
             <%= movie.movie[0].language_name %>
         </p>
     </div>
+    <h3>Producida por:</h3>
+    <div>
+        <ul>
+            <% movie.company.forEach(company=> { %>
+                <li>
+                    <%= company.company_name %>
+                </li>
+                <% }); %>
+        </ul>
+    </div>
+    <h3>País de producción:</h3>
+    <div>
+        <p>
+            <%= movie.movie[0].country_name %>
+        </p>
+    </div>
     <h3>Géneros: </h3>
     <ul>
         <% movie.genre.forEach(gen=> { %>
@@ -53,6 +69,16 @@
             <%= movie.movie[0].overview %>
         </p>
     </div>
+    <h3>Palabras clave asociadas:</h3>
+    <ul>
+        <% movie.keyword.forEach(keyword=>{ %>
+            <li>
+                <a href="/keyword/<%= keyword.keyword_name %>">
+                    <%= keyword.keyword_name %>
+                </a>
+            </li>
+            <% }); %>
+    </ul>
     <h3>Elenco:</h3>
     <ul>
         <% movie.cast.forEach(actor=> { %>

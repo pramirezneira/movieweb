@@ -98,12 +98,16 @@ app.get('/pelicula/:id', (req, res) => {
     const movieId = req.params.id;
 
     // Consulta SQL para obtener los datos de la película, elenco y crew
-    const movieQuery = `SELECT m.*, l.language_name
+    const movieQuery = `SELECT m.*, l.language_name, c.country_name
     FROM movie AS m
     INNER JOIN movie_languages AS ml
     ON m.movie_id = ml.movie_id
     INNER JOIN language AS l
     ON ml.language_id = l.language_id
+    INNER JOIN production_country AS pc
+    ON m.movie_id = pc.movie_id
+    INNER JOIN country AS c
+    ON pc.country_id = c.country_id
     WHERE m.movie_id = ? AND ml.language_role_id = 1;`;
 
     const castQuery = `SELECT p.*, mca.character_name FROM person AS p
@@ -133,6 +137,20 @@ app.get('/pelicula/:id', (req, res) => {
     INNER JOIN movie_crew AS mcr
     ON p.person_id = mcr.person_id
     WHERE movie_id = ? AND mcr.job = 'Writer';`;
+
+    const keywordQuery = `SELECT k.keyword_name FROM keyword AS k
+    INNER JOIN movie_keywords AS mk
+    ON k.keyword_id = mk.keyword_id
+    INNER JOIN movie AS m
+    ON mk.movie_id = m.movie_id
+    WHERE m.movie_id = ?;`;
+
+    const companyQuery = `SELECT pc.company_name FROM movie AS m
+    INNER JOIN movie_company AS mc
+    ON m.movie_id = mc.movie_id
+    INNER JOIN production_company AS pc
+    ON mc.company_id = pc.company_id
+    WHERE m.movie_id = ?;`
 
     const movieData = {};
 
@@ -182,7 +200,21 @@ app.get('/pelicula/:id', (req, res) => {
                                 return;
                             }
                             movieData.writer = rows;
-                            res.render('pelicula', { movie: movieData });
+                            db.all(keywordQuery, [movieId], (err, rows) => {
+                                if (err) {
+                                    console.error(err);
+                                    res.status(500).send("Error al cargar los datos de la película.");
+                                }
+                                movieData.keyword = rows;
+                                db.all(companyQuery, [movieId], (err, rows) => {
+                                    if (err) {
+                                        console.error(err);
+                                        res.status(500).send("Error al cargar los datos de la película.");
+                                    }
+                                    movieData.company = rows;
+                                    res.render('pelicula', { movie: movieData });
+                                });
+                            });
                         });
                     });
                 });
