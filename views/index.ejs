@@ -53,10 +53,29 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        #usuario {
+            width: 7vw;
+            aspect-ratio: 1 / 1;
+            height: auto;
+            display: flex;
+            position: absolute;
+            top: 1%;
+            right: 1%;
+            background-color: white;
+            border-radius: 100%;
+            outline: .5vw solid black;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: black;
+        }
     </style>
 </head>
 
 <body>
+    <a href="/" id="usuario"></a>
     <h1>MovieWeb</h1>
     <form action="/buscar" method="GET">
         <input type="text" name="q" placeholder="Buscar películas o personas..." />
@@ -64,6 +83,10 @@
     </form>
     <button onclick="window.location.href = '/keyword'" style="margin-top: 3vh;">Buscar por palabras clave</button>
     <button onclick="window.location.href = '/watchlist'" style="margin-top: 3vh;">Lista de reproduccion</button>
+    <script>
+        const usuario = document.getElementById("usuario");
+        usuario.textContent = localStorage.getItem("userName");
+    </script>
 </body>
 
 </html>

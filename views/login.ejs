@@ -134,6 +134,7 @@
                 });
                 div.addEventListener("click", (ev) => {
                     localStorage.setItem("userId", div.getAttribute("id"));
+                    localStorage.setItem("userName", div.textContent);
                     location.href = "/home";
                 });
                 userContainer.append(div);
