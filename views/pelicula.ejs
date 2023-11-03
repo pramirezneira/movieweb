@@ -16,6 +16,9 @@
     <h3>Fecha: <%= movie.movie[0].release_date %>
     </h3>
     <h3>Dirigida por: </h3>
+    <% if (movie.director.length == 0) { %>
+        <p>No hay información de el o los directores.</p>
+        <% } else { %>
     <ul>
         <% movie.director.forEach(director=> { %>
             <li>
@@ -25,7 +28,11 @@
             </li>
             <% }); %>
     </ul>
+    <% } %>
     <h3>Escrita por: </h3>
+    <% if (movie.writer.length == 0) { %>
+        <p>No hay información de el o los escritores.</p>
+        <% } else { %>
     <ul>
         <% movie.writer.forEach(writer=> { %>
             <li>
@@ -33,6 +40,7 @@
             </li>
             <% }); %>
     </ul>
+    <% } %>
     <h3>Idioma:</h3>
     <div id="language">
         <p>
@@ -41,6 +49,9 @@
     </div>
     <h3>Producida por:</h3>
     <div>
+        <% if (movie.writer.length == 0) { %>
+            <p>No hay información de el o los productores.</p>
+            <% } else { %>
         <ul>
             <% movie.company.forEach(company=> { %>
                 <li>
@@ -48,6 +59,7 @@
                 </li>
                 <% }); %>
         </ul>
+        <% } %>
     </div>
     <h3>País de producción:</h3>
     <div>
@@ -56,13 +68,17 @@
         </p>
     </div>
     <h3>Géneros: </h3>
+    <% if (movie.genre.length == 0) { %>
+        <p>No hay información de el o los géneros.</p>
+        <% } else { %>
     <ul>
-        <% movie.genre.forEach(gen=> { %>
+        <% movie.genre.forEach(genre=> { %>
             <li>
-                <%= gen.genre_name %>
+                <%= genre.genre_name %>
             </li>
             <% }); %>
     </ul>
+    <% } %>
     <h3>Argumento:</h3>
     <div id="overview">
         <p>
@@ -70,6 +86,9 @@
         </p>
     </div>
     <h3>Palabras clave asociadas:</h3>
+    <% if (movie.writer.length == 0) { %>
+        <p>No hay información de las palabras clave asociadas.</p>
+        <% } else { %>
     <ul>
         <% movie.keyword.forEach(keyword=>{ %>
             <li>
@@ -79,6 +98,7 @@
             </li>
             <% }); %>
     </ul>
+    <% } %>
     <h3>Elenco:</h3>
     <ul>
         <% movie.cast.forEach(actor=> { %>
