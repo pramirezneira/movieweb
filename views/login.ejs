@@ -82,7 +82,8 @@
     </form>
     <form id="delete-form" class="hidden">
         <button id="close2" type="button">X</button><br>
-        <button id="delete-button">Eliminar usuario</button>
+        <input type="text" id="input2" placeholder="Cambiar nombre...">
+        <button type="button" id="delete-button">Eliminar usuario</button>
     </form>
     <script async>
         const input = document.getElementById("input");
@@ -93,6 +94,7 @@
         const deleteButton = document.getElementById("delete-button");
         const closeButton2 = document.getElementById("close2");
         const h1 = document.getElementById("h1");
+        const input2 = document.getElementById("input2");
         setTimeout(() => {
             h1.style.opacity = 1;
         }, 20);
@@ -167,9 +169,21 @@
             if (!response.ok) alert(result);
             location.reload();
         });
+        deleteForm.addEventListener("submit", (ev) => {
+            ev.preventDefault();
+            fetch("/api/users", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: deleteButton.getAttribute("id"), name: input2.value })
+            }).then(response => response.text().then(result => {
+                alert(result);
+                location.reload();
+            }));
+        });
         closeButton2.addEventListener("click", (ev) => {
             deleteForm.className = "hidden";
         });
+
     </script>
 </body>
 
