@@ -49,7 +49,7 @@
     </div>
     <h3>Producida por:</h3>
     <div>
-        <% if (movie.writer.length == 0) { %>
+        <% if (movie.company.length == 0) { %>
             <p>No hay información de el o los productores.</p>
             <% } else { %>
         <ul>
@@ -86,7 +86,7 @@
         </p>
     </div>
     <h3>Palabras clave asociadas:</h3>
-    <% if (movie.writer.length == 0) { %>
+    <% if (movie.keyword.length == 0) { %>
         <p>No hay información de las palabras clave asociadas.</p>
         <% } else { %>
     <ul>
