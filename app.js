@@ -467,7 +467,7 @@ app.post("/api/users", async (req, res) => {
 app.patch("/api/users", (req, res) => {
     const { id, name } = req.body;
     if (id == undefined || !name) {
-        res.sendStatus(400);
+        res.status(400).send("El nombre no puede estar vacío");
         return;
     }
     users.all("UPDATE user SET name = ? WHERE id = ?", [name, id], (err, rows) => {

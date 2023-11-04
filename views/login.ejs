@@ -175,10 +175,10 @@
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: deleteButton.getAttribute("id"), name: input2.value })
-            }).then(response => response.text().then(result => {
+            }).then(response => response.ok ? response.text().then(result => {
                 alert(result);
                 location.reload();
-            }));
+            }) : response.text().then(result => alert(result)));
         });
         closeButton2.addEventListener("click", (ev) => {
             deleteForm.className = "hidden";
