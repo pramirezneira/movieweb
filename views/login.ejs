@@ -106,7 +106,10 @@
                 body: JSON.stringify({ name: input.value })
             });
             const result = await response.text();
-            if (!response.ok) alert(result);
+            if (!response.ok) {
+                alert(result);
+                return;
+            }
             location.reload();
         });
         fetch("/api/users").then(response => !response.ok ? response.text().then(result => alert(result)) : response.json().then(result => {
@@ -170,7 +173,6 @@
                 alert(result);
                 return;
             }
-            alert(result);
             location.reload();
         });
         deleteForm.addEventListener("submit", (ev) => {
@@ -180,7 +182,6 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: deleteButton.getAttribute("id"), name: input2.value })
             }).then(response => response.ok ? response.text().then(result => {
-                alert(result);
                 location.reload();
             }) : response.text().then(result => alert(result)));
         });

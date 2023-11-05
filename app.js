@@ -404,7 +404,7 @@ app.get("/update", (req, res) => {
 app.post("/api/update", upload.single("zipFile"), async (req, res) => {
     const zipFile = req.file;
     if (!zipFile) {
-        res.status(400).send("El nombre no puede estar vacío");
+        res.status(400).send("Bad Request");
         return;
     }
     try {
@@ -441,7 +441,7 @@ app.get("/api/users", async (req, res) => {
 app.post("/api/users", async (req, res) => {
     const { name } = req.body;
     if (!name) {
-        res.sendStatus(400);
+        res.status(400).send("El nombre no puede estar vacío.");
         return;
     }
     try {
